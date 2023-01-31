@@ -1,0 +1,59 @@
+class Solution {
+
+    public HashMap<String, HashMap<String, Double>> createAdjacencyList(List<List<String>> equations, double[] values){
+        HashMap<String, HashMap<String, Double>> adjacencyList = new  HashMap<String, HashMap<String, Double>>();
+        for(int index = 0; index < equations.size(); index++){
+            List<String> equation = equations.get(index);
+            String numerator  = equation.get(0);
+            String denominator = equation.get(1);
+            adjacencyList.putIfAbsent(numerator, new HashMap<String, Double>());
+            adjacencyList.putIfAbsent(denominator, new HashMap<String, Double>());
+            adjacencyList.get(numerator).put(denominator, values[index]);
+            adjacencyList.get(denominator).put(numerator, 1/values[index]);
+        }
+        return adjacencyList;
+    }
+
+    public double calculateProduct(HashMap<String, HashMap<String, Double>> adjacencyList, String currentNode, String destination, double product, ArrayList<String> visited){
+        visited.add(currentNode);
+        if(currentNode.equals(destination)){
+            return product;
+        }
+        
+        double finalProduct = -1;
+        for(Map.Entry<String, Double> neighbor : adjacencyList.get(currentNode).entrySet()){
+            if(!visited.contains(neighbor.getKey())){
+                finalProduct = calculateProduct(adjacencyList, neighbor.getKey(), destination, product * neighbor.getValue(), visited);
+                if(finalProduct != -1)
+                    break;
+            }
+            
+        }
+        visited.remove(currentNode);
+        return finalProduct;
+    }
+
+    public double[] calcEquation(List<List<String>> equations, double[] values, List<List<String>> queries) {
+        double[] result = new double[queries.size()];
+        HashMap<String, HashMap<String, Double>> adjacencyList = new  HashMap<String, HashMap<String, Double>>();
+        adjacencyList = createAdjacencyList(equations, values);
+
+        for(int index = 0; index < queries.size(); index++){
+            List<String> query = queries.get(index);
+            String numerator  = query.get(0);
+            String denominator = query.get(1);
+            //corner cases
+            if(!adjacencyList.containsKey(numerator) || !adjacencyList.containsKey(denominator)){
+                result[index] = -1;
+            }
+            else if( numerator.equals(denominator))
+               result[index] = 1;
+            else {
+                ArrayList<String> visited = new ArrayList<String>();
+                result[index] = calculateProduct(adjacencyList, numerator, denominator, 1, visited);
+            }
+        }
+        return result;
+
+    }
+}
