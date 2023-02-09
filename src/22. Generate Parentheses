@@ -1,0 +1,28 @@
+class Solution {
+
+    private int numOfParanthesis;
+    private List<String> paranthesisCombination = new ArrayList<String>();
+
+    private void buildCombinations(String currentString, int openBracesCount, int closeBracesCount){
+        if(currentString.length() == 2*numOfParanthesis){
+            paranthesisCombination.add(currentString);
+            return;
+        }
+        if(openBracesCount < numOfParanthesis){
+            currentString += "(";
+            buildCombinations(currentString, openBracesCount+1, closeBracesCount);
+            currentString = currentString.substring(0,currentString.length()-1);
+        }
+        if(closeBracesCount < openBracesCount){
+            currentString += ")";
+            buildCombinations(currentString, openBracesCount, closeBracesCount+1);
+            currentString = currentString.substring(0,currentString.length()-1);
+        }
+    }
+
+    public List<String> generateParenthesis(int n) {
+        this.numOfParanthesis = n;
+        buildCombinations("", 0, 0);
+        return paranthesisCombination;
+    }
+}
