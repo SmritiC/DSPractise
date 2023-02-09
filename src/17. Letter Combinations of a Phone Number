@@ -1,0 +1,37 @@
+class Solution {
+
+    private List<String> letterCombination = new ArrayList<String>();
+    private Map<Character, String> digitToLetters = new HashMap<Character, String>();
+    private String phoneDigits;
+
+    private void setDigitsToLetters(){
+        this.digitToLetters =  Map.of(
+        '2', "abc", '3', "def", '4', "ghi", '5', "jkl", 
+        '6', "mno", '7', "pqrs", '8', "tuv", '9', "wxyz");
+    }
+
+    private void buildCombinations(int digitIndex, String combination){
+        if(combination.length() == phoneDigits.length()){
+            letterCombination.add(combination);
+            return;
+        }
+
+        String possibleLetters = digitToLetters.get(phoneDigits.charAt(digitIndex));
+        for(char letter : possibleLetters.toCharArray()){
+            combination += letter;
+            buildCombinations(digitIndex+1, combination);
+            combination = combination.substring(0, combination.length()-1);
+        }
+    }
+
+    public List<String> letterCombinations(String digits) {
+        if (digits.length() == 0) {
+            return letterCombination;
+        }
+
+        setDigitsToLetters();
+        this.phoneDigits = digits;
+        buildCombinations(0, "");
+        return letterCombination;
+    }
+}
