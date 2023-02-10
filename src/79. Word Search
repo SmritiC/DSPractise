@@ -1,0 +1,43 @@
+class Solution {
+    
+    private String word;
+    private char[][] board;
+    private int[][] directions = {{1,0}, {-1,0}, {0,1}, {0,-1}};
+
+    private boolean isValid(int row, int column){
+        return 0 <= row && row < board.length && 0 <= column && column < board[0].length;
+    }
+
+    private boolean traverseWord(int row, int column, int index){
+        if(index >= word.length()){
+            return true;
+        }
+        if(!isValid(row, column) || board[row][column] != word.charAt(index)){
+            return false;
+        }
+
+        boolean result = false;
+        board[row][column] = '#';
+        for(int[] direction : directions){
+            result = traverseWord(row + direction[0], column + direction[1], index+1);
+            if(result){
+                break;
+            }
+        }
+        board[row][column] = word.charAt(index);
+        return result;
+    }
+
+    public boolean exist(char[][] board, String word) {
+        this.word = word;
+        this.board = board;
+        for(int row=0; row < board.length; row++){
+            for(int column =0; column < board[0].length; column++){
+                if(traverseWord(row, column, 0)){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+}
