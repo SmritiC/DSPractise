@@ -1,0 +1,42 @@
+class Solution {
+    private int[] nums;
+
+    private void swap(int firstIndex, int secIndex){
+        int temp = nums[firstIndex];
+        nums[firstIndex] = nums[secIndex];
+        nums[secIndex] = temp;
+    }
+
+    private int partition(int left, int right, int pivotIndex){
+        int pivot = nums[pivotIndex];
+        int insertIndex = left;
+        for(int index=left; index <= right; index++){
+            if(nums[index] < pivot){
+                swap(index, insertIndex);
+                insertIndex++;
+            }
+        }
+        swap(insertIndex, right);
+        return insertIndex;
+    }
+
+    private int quickselect(int left, int right, int largestIndex){
+        int pivotIndex = partition(left, right, right);
+
+        if(largestIndex == pivotIndex){
+            return nums[pivotIndex];
+        } 
+        else if(largestIndex < pivotIndex){
+            return quickselect(left, pivotIndex-1, largestIndex);
+        }
+        else {
+            return quickselect(pivotIndex+1, right, largestIndex);
+        }
+    }
+
+    public int findKthLargest(int[] nums, int k) {
+        this.nums = nums;
+        return quickselect(0, nums.length-1, nums.length-k);
+
+    }
+}

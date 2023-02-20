@@ -1,0 +1,15 @@
+class Solution {
+    public int lengthOfLongestSubstring(String s) {
+       int longestLength = 0;
+       int beginningIndex = 0;
+       Map<Character, Integer> slidingWindow = new HashMap<Character, Integer>();
+       for(int nextcharIndex=0; nextcharIndex<s.length(); nextcharIndex++){
+           if(slidingWindow.containsKey(s.charAt(nextcharIndex))){
+               beginningIndex = Math.max(beginningIndex, slidingWindow.get(s.charAt(nextcharIndex)) + 1);
+           }
+            longestLength = Math.max(longestLength, nextcharIndex - beginningIndex +1);
+            slidingWindow.put(s.charAt(nextcharIndex), nextcharIndex);
+       }
+       return longestLength;
+    }
+}

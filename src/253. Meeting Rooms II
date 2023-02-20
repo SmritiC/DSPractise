@@ -1,0 +1,22 @@
+class Solution {
+    public int minMeetingRooms(int[][] intervals) {
+        Arrays.sort(intervals, new Comparator<int[]>() {
+            @Override
+            public int compare(int[] firstInterval, int[] secondInterval){
+                return firstInterval[0] - secondInterval[0];
+            }
+        });
+
+        PriorityQueue<Integer> endingTimeline = new PriorityQueue<Integer>();
+        endingTimeline.add(intervals[0][1]);
+        for(int index=1; index < intervals.length; index++){
+            int startTime = intervals[index][0];
+            int endTime = intervals[index][1];
+            if(startTime >= endingTimeline.peek()){
+                endingTimeline.poll();
+            }
+            endingTimeline.add(endTime);
+        }
+        return endingTimeline.size();
+    }
+}
