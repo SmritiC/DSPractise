@@ -1,0 +1,118 @@
+class Node {
+    private String url;
+    private Node previousNode;
+    private Node nextNode;
+
+    public Node(String url, Node previousNode, Node nextNode){
+        this.url = url;
+        this.previousNode = previousNode;
+        this.nextNode = nextNode;
+    }
+
+    public Node(String url){
+        this.url = url;
+        this.previousNode = null;
+        this.nextNode = null;
+    }
+
+    public Node(){
+        this.previousNode = null;
+        this.nextNode = null;
+    }
+
+    public void setURL(String url){
+        this.url = url;
+    }
+
+    public void setPreviousNode(Node previousNode){
+         this.previousNode = previousNode;
+    }
+
+    public void setNextNode(Node nextNode){
+        this.nextNode = nextNode;
+    }
+
+    public String getURL(){
+        return this.url;
+    }
+
+    public Node getPreviousNode(){
+        return this.previousNode;
+    }
+
+    public Node getNextNode(){
+        return this.nextNode;
+    }
+}
+
+class DoublyLinkedList{
+    private Node head;
+    private Node tail;
+    private Node currentPage;
+
+    public DoublyLinkedList(String url){
+        head = new Node(url);
+        tail = head;
+        currentPage = head;
+    }
+
+    public void removeNextNodes(){
+        tail = currentPage;
+    }
+
+    public void addInTail(Node node){
+        node.setPreviousNode(currentPage);
+        currentPage.setNextNode(node);
+        tail = node;
+        currentPage = node;
+    }
+
+    public Node moveBackward(int noOfSteps){
+        int crossedSteps = 0;
+        while(crossedSteps != noOfSteps && currentPage.getPreviousNode() != null){
+            currentPage = currentPage.getPreviousNode();
+            crossedSteps++;
+        }
+        return currentPage;
+    }
+
+    public Node moveForward(int noOfSteps){
+        int crossedSteps = 0;
+        while(crossedSteps != noOfSteps && currentPage.getNextNode() != null){
+            currentPage = currentPage.getNextNode();
+            crossedSteps++;
+        }
+        return currentPage;
+    }
+}
+
+
+class BrowserHistory {
+
+    private DoublyLinkedList browserHistory;
+
+    public BrowserHistory(String homepage) {
+        browserHistory = new DoublyLinkedList(homepage);
+    }
+    
+    public void visit(String url) {
+        browserHistory.removeNextNodes();
+        browserHistory.addInTail(new Node(url));
+    }
+    
+    public String back(int steps) {
+        return browserHistory.moveBackward(steps).getURL();
+    }
+    
+    public String forward(int steps) {
+        return browserHistory.moveForward(steps).getURL();
+    }
+}
+
+/**
+ * Your BrowserHistory object will be instantiated and called as such:
+ * BrowserHistory obj = new BrowserHistory(homepage);
+ * obj.visit(url);
+ * String param_2 = obj.back(steps);
+ * String param_3 = obj.forward(steps);
+ */
