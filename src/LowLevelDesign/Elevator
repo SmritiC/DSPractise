@@ -1,0 +1,154 @@
+// Online Java Compiler
+// Use this editor to write, compile and run your Java code online
+/*
+End users - public, admin
+Requirements - 
+1. floor buttons - inside - move to that floor
+2. elevator buttons - outside - move to that floor
+3. special buttons - alarm, fan, stop, admin, etc
+4. doors
+5. doors shd open and close
+6. direction
+7. current floor
+8. Linked List
+
+Input Output:
+openAt(int floorNo)
+openAt(int floorNo, Direction direction)
+print the process
+
+Classes:
+<<ElevatorSystem>>
+    +floorRequest(int)
+    +floorRequest(int, Direction)
+
+ElevatorService
+    -Elevator
+    -printer
+    -noOfFloors
+    -strategy: MovementStrategy
+    +floorRequest(int)
+    +floorRequest(int, Direction)
+    
+<<Elevator>>
+    +moveToFloor(int)
+
+SimpleElevator
+    -buttons: Map<String, Button>
+    -currentDirection: Direction
+    -currentFloor: int
+    +moveToFloor(int)
+    +static class ElevatorBuilder
+
+<<Button>>
+    +process()
+
+FloorButton
+    -floorNo: int
+    -strategy: MovementStrategy
+    +process()
+
+ElevatorButton
+    -floorNo: int
+    -strategy: MovementStrategy
+    -direction: Diretion
+    +process()
+
+<<MovementStrategy>>
+    +floorRequest(int floorNo)
+    
+DefaultStrategy
+    -waitingFloors: DoublyLinkedList<Integer>
+    -elevator: Elevator
+    +floorRequest(int floorNo)
+*/
+
+import java.util.*;
+
+interface ElevatorSystem {
+    public void floorRequest(int floorNo);
+    public void floorRequest(int floorNo, Direction direction);
+}
+
+class ElevatorService implements ElevatorSystem {
+    private Elevator elevator;
+    private int noOfFloors;
+    public ElevatorService(MovementStrategy strategy, int noOfFloors){
+        this.noOfFloors = noOfFloors;
+        Elevator.ElevatorBuilder builder = new Elevator.ElevatorBuilder();
+        for(int floor = 1; floor <= noOfFloors; floor++){
+            builder.addButton(floor+"", new FloorButton(floor, strategy));
+            builder.addButton(floor+ Direction.UP + "", new ElevatorButton(floor, Direction.UP, strategy));
+            builder.addButton(floor+ Direction.Down + "", new ElevatorButton(floor, Direction.Down, strategy));
+        }
+        this.elevator = builder.build();
+    }
+    
+    @Override
+    public void floorRequest(int floorNo){
+        elevator.moveToFloor(floorNo+"");
+    } 
+    
+    @Override
+    public void floorRequest(int floorNo, Direction direction){
+        elevator.moveToFloor(floorNo+direction+"");
+    } 
+}
+
+class ElevatorFactory {
+    public static ElevatorSystem getElevator(String elevatorType, String strategy, int noOfFloors){
+        if(elevatorType.equals(Config.SIMPLE) && strategy.equals(Config.DEFAULT)){
+            return new ElevatorService(new DefaultStrategy(), noOfFloors);
+        }
+        return null;
+    }
+}
+
+interface Elevator {
+    public void moveToFloor(String buttonId);
+}
+
+class SimpleElevator implements Elevator {
+    private final Map<String, Button> buttons = new HashMap<>();
+    private Direction currentDirection;
+    private int currentFloor;
+    
+    private SimpleElevator(ElevatorBuilder builder){
+        this.buttons = builder.buttons;
+        currentDirection = Direction.NONE;
+        currentFloor = 1;
+    }
+    
+    public static class ElevatorBuilder {
+        private Map<String, Button> buttons = new HashMap<>();
+        public ElevatorBuilder addButton(String buttonId, Button button){
+            buttons.put(buttonId, button);
+        }
+        public SimpleElevator build(){
+            return new SimpleElevator(this);
+        }
+    }
+    
+    public void moveToFloor(String buttonId){
+        buttons.get(buttonId).process();
+    }
+}
+
+
+
+enum Direction {
+    UP,
+    DOWN,
+    NONE
+}
+
+class Config {
+    public static final String SIMPLE = "SIMPLE";
+    public static final String DEFAULT = "DEFAULT";
+}
+
+class HelloWorld {
+    public static void main(String[] args) {
+        System.out.println("Hello, World!");
+    }
+}
